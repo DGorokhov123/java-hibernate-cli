@@ -27,7 +27,7 @@ cd java-hibernate-cli
 ```bash
 docker compose up -d
 ```
-2. Соберите и запустите проект:
+3. Соберите и запустите проект:
 ```bash
 ./mvnw clean package
 ./mvnw exec:java -Dexec.mainClass=ru.dgorokhov.Main
