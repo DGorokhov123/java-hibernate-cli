@@ -11,17 +11,16 @@ public class HibernateUtil {
     @Getter
     private static final SessionFactory sessionFactory = buildSessionFactory();
 
-    private static SessionFactory buildSessionFactory() {
-        try {
-            SessionFactory factory = new Configuration().configure().buildSessionFactory();
-            log.info("SessionFactory initialized successfully.");
-            return factory;
-        } catch (Exception e) {
-            log.error("Failed to initialize SessionFactory: {}", e.getMessage());
-            throw new RuntimeException("Failed to initialize SessionFactory", e);
-        }
+    /*
+    Инициализация фабрики
+     */
+    public static void init() {
+        getSessionFactory();
     }
 
+    /*
+    Закрытие фабрики перед шатдауном
+     */
     public static void shutdown() {
         log.info("Shutting down SessionFactory...");
         try {
@@ -30,6 +29,20 @@ public class HibernateUtil {
         } catch (Exception e) {
             log.info("Failed to close SessionFactory.");
             throw new RuntimeException("Failed to close SessionFactory", e);
+        }
+    }
+
+    /*
+    Создает фабрику
+     */
+    private static SessionFactory buildSessionFactory() {
+        try {
+            SessionFactory factory = new Configuration().configure().buildSessionFactory();
+            log.info("SessionFactory initialized successfully.");
+            return factory;
+        } catch (Exception e) {
+            log.error("Failed to initialize SessionFactory: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize SessionFactory", e);
         }
     }
 

@@ -1,11 +1,10 @@
 package ru.dgorokhov;
 
 import com.github.javafaker.Faker;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import ru.dgorokhov.dal.HibernateUtil;
 import ru.dgorokhov.dal.User;
 import ru.dgorokhov.dal.UserDao;
+import ru.dgorokhov.dal.UserDaoImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserDaoTest {
 
-    private final UserDao userDao = new UserDao();
+    private final UserDao userDao = new UserDaoImpl();
     private final Faker faker = new Faker();
 
     @Test

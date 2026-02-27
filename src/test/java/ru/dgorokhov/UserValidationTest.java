@@ -1,169 +1,250 @@
 package ru.dgorokhov;
 
 import com.github.javafaker.Faker;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import ru.dgorokhov.dal.HibernateUtil;
-import ru.dgorokhov.dal.User;
-import ru.dgorokhov.dal.UserDao;
-import ru.dgorokhov.exception.DatabaseConstraintsException;
-import ru.dgorokhov.exception.EntityValidationException;
+import ru.dgorokhov.dto.UserCreateDto;
+import ru.dgorokhov.dto.UserResponseDto;
+import ru.dgorokhov.dto.UserUpdateDto;
+import ru.dgorokhov.service.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserValidationTest {
 
-    private final UserDao userDao = new UserDao();
+    private final UserService userService = new UserService();
     private final Faker faker = new Faker();
 
     @Test
-    void validationAnnotationsTest() {
+    void createValidationAnnotationsTest() {
 
         // 1. Пустое имя (@NotBlank)
-        User emptyNameUser = User.builder()
+        UserCreateDto emptyNameUser = UserCreateDto.builder()
                 .name("")
                 .email(faker.internet().emailAddress())
                 .age(25)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(emptyNameUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(emptyNameUser));
 
         // 2. Null имя (@NotBlank)
-        User nullNameUser = User.builder()
+        UserCreateDto nullNameUser = UserCreateDto.builder()
                 .name(null)
                 .email(faker.internet().emailAddress())
                 .age(25)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(nullNameUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(nullNameUser));
 
         // 3. Имя больше 255 символов (@Size)
         String longName = faker.lorem().characters(256);
-        User tooLongNameUser = User.builder()
+        UserCreateDto tooLongNameUser = UserCreateDto.builder()
                 .name(longName)
                 .email(faker.internet().emailAddress())
                 .age(25)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(tooLongNameUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(tooLongNameUser));
 
         // 4. Пустой email (@NotBlank)
-        User emptyEmailUser = User.builder()
+        UserCreateDto emptyEmailUser = UserCreateDto.builder()
                 .name(faker.name().fullName())
                 .email("")
                 .age(25)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(emptyEmailUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(emptyEmailUser));
 
         // 5. Null email (@NotBlank)
-        User nullEmailUser = User.builder()
+        UserCreateDto nullEmailUser = UserCreateDto.builder()
                 .name(faker.name().fullName())
                 .email(null)
                 .age(25)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(nullEmailUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(nullEmailUser));
 
         // 6. Неверный формат email (@Email)
-        User invalidEmailUser = User.builder()
+        UserCreateDto invalidEmailUser = UserCreateDto.builder()
                 .name(faker.name().fullName())
                 .email("not-an-email")
                 .age(25)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(invalidEmailUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(invalidEmailUser));
 
         // 7. Email без @ (@Email)
-        User noAtEmailUser = User.builder()
+        UserCreateDto noAtEmailUser = UserCreateDto.builder()
                 .name(faker.name().fullName())
                 .email("testexample.com")
                 .age(25)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(noAtEmailUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(noAtEmailUser));
 
         // 8. Отрицательный возраст (@Positive)
-        User negativeAgeUser = User.builder()
+        UserCreateDto negativeAgeUser = UserCreateDto.builder()
                 .name(faker.name().fullName())
                 .email(faker.internet().emailAddress())
                 .age(-5)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(negativeAgeUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(negativeAgeUser));
 
         // 9. Нулевой возраст (@Positive)
-        User zeroAgeUser = User.builder()
+        UserCreateDto zeroAgeUser = UserCreateDto.builder()
                 .name(faker.name().fullName())
                 .email(faker.internet().emailAddress())
                 .age(0)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(zeroAgeUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(zeroAgeUser));
 
         // 10. Возраст больше 120 (@Max)
-        User tooOldUser = User.builder()
+        UserCreateDto tooOldUser = UserCreateDto.builder()
                 .name(faker.name().fullName())
                 .email(faker.internet().emailAddress())
                 .age(121)
                 .build();
-        assertThrows(EntityValidationException.class, () -> userDao.create(tooOldUser));
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.create(tooOldUser));
+
+    }
+
+    @Test
+    void updateValidationAnnotationsTest() {
+        UserCreateDto userCreateDto = UserCreateDto.builder()
+                .name(faker.name().fullName())
+                .email(faker.internet().emailAddress())
+                .age(25)
+                .build();
+        UserResponseDto savedUser = assertDoesNotThrow(() -> userService.create(userCreateDto));
+        assertNotNull(savedUser.getId());
+        Long id = savedUser.getId();
+
+
+        // Пустой ID
+        UserUpdateDto emptyNameUser = UserUpdateDto.builder()
+                .name("Maria")
+                .build();
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.update(emptyNameUser));
+
+        // Отрицательный ID
+        UserUpdateDto nullNameUser = UserUpdateDto.builder()
+                .id(-1L)
+                .name("Maria")
+                .build();
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.update(nullNameUser));
+
+        // Имя больше 255 символов (@Size)
+        UserUpdateDto tooLongNameUser = UserUpdateDto.builder()
+                .id(id)
+                .name(faker.lorem().characters(256))
+                .email(faker.internet().emailAddress())
+                .age(25)
+                .build();
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.update(tooLongNameUser));
+
+        // Неверный формат email (@Email)
+        UserUpdateDto invalidEmailUser = UserUpdateDto.builder()
+                .id(id)
+                .name(faker.name().fullName())
+                .email("not-an-email")
+                .age(25)
+                .build();
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.update(invalidEmailUser));
+
+        // Email без @ (@Email)
+        UserUpdateDto noAtEmailUser = UserUpdateDto.builder()
+                .id(id)
+                .name(faker.name().fullName())
+                .email("testexample.com")
+                .age(25)
+                .build();
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.update(noAtEmailUser));
+
+        // Отрицательный возраст (@Positive)
+        UserUpdateDto negativeAgeUser = UserUpdateDto.builder()
+                .id(id)
+                .name(faker.name().fullName())
+                .email(faker.internet().emailAddress())
+                .age(-5)
+                .build();
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.update(negativeAgeUser));
+
+        // Нулевой возраст (@Positive)
+        UserUpdateDto zeroAgeUser = UserUpdateDto.builder()
+                .id(id)
+                .name(faker.name().fullName())
+                .email(faker.internet().emailAddress())
+                .age(0)
+                .build();
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.update(zeroAgeUser));
+
+        // Возраст больше 120 (@Max)
+        UserUpdateDto tooOldUser = UserUpdateDto.builder()
+                .id(id)
+                .name(faker.name().fullName())
+                .email(faker.internet().emailAddress())
+                .age(121)
+                .build();
+        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> userService.update(tooOldUser));
 
     }
 
     @Test
     void databaseConstraintsTest() {
         String uniqueEmail = faker.internet().emailAddress();
+        String otherEmail = faker.internet().emailAddress();
         String name1 = faker.name().fullName();
         String name2 = faker.name().fullName();
+        String name3 = faker.name().fullName();
 
-        User user1 = User.builder()
+        UserCreateDto userCreateDto1 = UserCreateDto.builder()
                 .name(name1)
                 .email(uniqueEmail)
                 .age(25)
                 .build();
-        User savedUser1 = assertDoesNotThrow(() -> userDao.create(user1));
+        UserResponseDto savedUser1 = assertDoesNotThrow(() -> userService.create(userCreateDto1));
         assertNotNull(savedUser1.getId());
 
-        User user2 = User.builder()
+        UserCreateDto userCreateDto2 = UserCreateDto.builder()
                 .name(name2)
+                .email(otherEmail)
+                .age(52)
+                .build();
+        UserResponseDto savedUser2 = assertDoesNotThrow(() -> userService.create(userCreateDto2));
+        assertNotNull(savedUser2.getId());
+
+        // UserCreateDto
+
+        UserCreateDto userCreateDto3 = UserCreateDto.builder()
+                .name(name3)
                 .email(uniqueEmail)
                 .age(30)
                 .build();
-        assertThrows(DatabaseConstraintsException.class, () -> userDao.create(user2));
+        assertThrows(org.hibernate.exception.ConstraintViolationException.class, () -> userService.create(userCreateDto3));
 
-        User foundUser1 = userDao.findById(savedUser1.getId());
+        UserResponseDto foundUser1 = userService.findById(savedUser1.getId());
         assertNotNull(foundUser1);
         assertEquals(name1, foundUser1.getName());
         assertEquals(uniqueEmail, foundUser1.getEmail());
 
-        userDao.delete(savedUser1.getId());
+        // UserUpdateDto
 
-        User user3 = User.builder()
+        UserUpdateDto userUpdateDto = UserUpdateDto.builder()
+                .id(savedUser2.getId())
                 .name(name2)
                 .email(uniqueEmail)
                 .age(30)
                 .build();
-        User savedUser3 = assertDoesNotThrow(() -> userDao.create(user3));
-        assertNotNull(savedUser3.getId());
-    }
+        assertThrows(org.hibernate.exception.ConstraintViolationException.class, () -> userService.update(userUpdateDto));
 
-    @Test
-    void emailUniquenessWithUpdateTest() {
-        String email1 = faker.internet().emailAddress();
-        String email2 = faker.internet().emailAddress();
-        String name1 = faker.name().fullName();
-        String name2 = faker.name().fullName();
+        UserResponseDto foundUser2 = userService.findById(savedUser2.getId());
+        assertNotNull(foundUser2);
+        assertEquals(name2, foundUser2.getName());
+        assertEquals(otherEmail, foundUser2.getEmail());
 
-        User user1 = User.builder()
-                .name(name1)
-                .email(email1)
-                .age(25)
-                .build();
-        User savedUser1 = userDao.create(user1);
-        User user2 = User.builder()
+        // Delete and create again
+
+        userService.delete(savedUser1.getId());
+
+        UserCreateDto userCreateDto4 = UserCreateDto.builder()
                 .name(name2)
-                .email(email2)
+                .email(uniqueEmail)
                 .age(30)
                 .build();
-        User savedUser2 = userDao.create(user2);
-
-        savedUser2.setEmail(email1);
-        assertThrows(DatabaseConstraintsException.class, () -> userDao.update(savedUser2));
-
-        User unchangedUser2 = userDao.findById(savedUser2.getId());
-        assertEquals(email2, unchangedUser2.getEmail());
+        UserResponseDto savedUser4 = assertDoesNotThrow(() -> userService.create(userCreateDto4));
+        assertNotNull(savedUser4.getId());
     }
 
 }
