@@ -12,7 +12,15 @@ import java.util.List;
 
 public class UserService {
 
-    private final UserDao userDao = new UserDaoImpl();
+    private final UserDao userDao;
+
+    public UserService() {
+        this.userDao = new UserDaoImpl();
+    }
+
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     /*
     Все юзеры в виде листа dto
