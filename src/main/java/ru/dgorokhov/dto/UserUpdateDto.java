@@ -1,23 +1,18 @@
 package ru.dgorokhov.dto;
 
-import jakarta.validation.*;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.Set;
+import lombok.NoArgsConstructor;
+import ru.dgorokhov.validation.AtLeastOneNotNull;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@AtLeastOneNotNull(fields = {"name", "email", "age"})
 public class UserUpdateDto {
-
-    private static final Validator VALIDATOR;
-
-    static {
-        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-            VALIDATOR = factory.getValidator();
-        }
-    }
 
     @NotNull(message = "UserUpdateDto should have ID ")
     @Positive(message = "ID should be positive number")
@@ -33,10 +28,5 @@ public class UserUpdateDto {
     @Positive
     @Max(value = 120, message = "Unfortunately, age can be less then 120 years only")
     private Integer age;
-
-    public void validate() {
-        Set<ConstraintViolation<UserUpdateDto>> violations = VALIDATOR.validate(this);
-        if (!violations.isEmpty()) throw new ConstraintViolationException("UserUpdateDto not valid", violations);
-    }
 
 }

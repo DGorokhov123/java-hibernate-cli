@@ -1,20 +1,22 @@
-# Консольное приложение с Hibernate без Spring
+# REST API Service на чистом Spring без Boot 
 
-Консольное приложение на Java, использующее Hibernate для взаимодействия с PostgreSQL, без использования Spring. 
+Web приложение на Java, использующее Spring Data JPA для взаимодействия с PostgreSQL 
 Приложение поддерживает базовые операции CRUD (Create, Read, Update, Delete) над сущностью User.
 
 ### Описание
-- Использовать Hibernate в качестве ORM
+- Использует Spring Data JPA + Hibernate
 - База данных — PostgreSQL
-- Hibernate без Spring, используется hibernate.cfg.xml
+- Настройка Hibernate через applicatiom.yaml + Java Config
 - Реализованы CRUD-операции для сущности User (создание, чтение, обновление, удаление) 
 - User состоит из полей: id, name, email, age, created_at
-- Консольный интерфейс для взаимодействия с пользователем.
+- REST API для взаимодействия с фронтом
 - Maven для управления зависимостями.
 - Логирование через logback
-- Транзакции для операций с базой данных.
-- DAO-паттерн для отделения логики работы с БД.
-- Обработка исключений
+- @Transactional + JPA Repository для операций с базой данных.
+- Обработка исключений через @RestControllerAdvice
+
+### Тесты
+- MockMvc тесты интеграции контроллера + сервисного слоя, замокан JPA Repository  
 
 ### Запуск приложения
 

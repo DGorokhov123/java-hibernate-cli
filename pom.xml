@@ -13,6 +13,8 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <spring.version>7.0.5</spring.version>
+
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <lombok.version>1.18.42</lombok.version>
         <hibernate.version>7.2.5.Final</hibernate.version>
@@ -27,9 +29,39 @@
         <jakarta.validation.version>3.1.1</jakarta.validation.version>
         <hibernate.validator.version>9.1.0.Final</hibernate.validator.version>
         <expressly.version>6.0.0</expressly.version>
+        <jackson.version>3.1.0</jackson.version>
+        <tomcat.version>11.0.18</tomcat.version>
     </properties>
 
     <dependencies>
+
+        <!-- SPRING -->
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!-- TOOLS -->
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -37,7 +69,13 @@
             <version>${lombok.version}</version>
         </dependency>
 
-        <!-- HIBERNATE -->
+        <!-- SPRING DATA JPA -->
+
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>4.0.4</version> <!-- проверьте актуальную версию на 2026 год -->
+        </dependency>
 
         <dependency>
             <groupId>org.hibernate.orm</groupId>
@@ -65,37 +103,14 @@
             <version>${postgres.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- TESTCONTAINERS -->
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- TESTS -->
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -115,6 +130,20 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
 

@@ -1,9 +1,9 @@
 package ru.dgorokhov.mapper;
 
+import ru.dgorokhov.dal.User;
 import ru.dgorokhov.dto.UserCreateDto;
 import ru.dgorokhov.dto.UserResponseDto;
 import ru.dgorokhov.dto.UserUpdateDto;
-import ru.dgorokhov.dal.User;
 
 public class UserMapper {
 
